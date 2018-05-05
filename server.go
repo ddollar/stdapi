@@ -1,4 +1,4 @@
-package api
+package stdapi
 
 import (
 	"crypto/tls"
