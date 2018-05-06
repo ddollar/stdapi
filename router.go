@@ -2,6 +2,7 @@ package stdapi
 
 import (
 	"context"
+	"net"
 	"net/http"
 
 	"github.com/gorilla/mux"
@@ -24,8 +25,8 @@ func (rt *Router) Redirect(method, path string, code int, target string) {
 }
 
 func (rt *Router) Route(method, path string, fn HandlerFunc) {
-	rt.Handle(path, rt.http(fn)).Methods(method)
 	rt.Handle(path, rt.websocket(fn)).Methods(method).Headers("Upgrade", "websocket")
+	rt.Handle(path, rt.http(fn)).Methods(method)
 }
 
 func (rt *Router) Static(prefix, path string) {
@@ -72,6 +73,8 @@ func (rt *Router) context(name string, w http.ResponseWriter, r *http.Request, c
 }
 
 func (rt *Router) handle(fn HandlerFunc, c *Context) error {
+	defer c.Close()
+
 	c.logger.Logf("method=%q path=%q", c.request.Method, c.request.URL.Path)
 	c.logger = c.logger.Start()
 
@@ -88,11 +91,16 @@ func (rt *Router) handle(fn HandlerFunc, c *Context) error {
 
 	fnmw := rt.wrap(fn, mw...)
 
-	if err := fnmw(c); err != nil {
-		c.Error(err)
+	err := fnmw(c)
+	switch t := err.(type) {
+	case *net.OpError:
+		c.logger.Logf("state=closed error=%q", t.Err)
+	default:
+		if err != nil {
+			c.Error(err)
+		}
+		c.logger.Logf("code=%d", rw.code)
 	}
-
-	c.logger.Logf("code=%d", rw.code)
 
 	return nil
 }

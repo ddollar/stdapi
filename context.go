@@ -62,6 +62,14 @@ func (c *Context) BodyJSON(v interface{}) error {
 	return nil
 }
 
+func (c *Context) Close() error {
+	if c.ws != nil {
+		return c.ws.Close()
+	}
+
+	return nil
+}
+
 func (c *Context) Context() context.Context {
 	return c.context
 }
@@ -105,6 +113,19 @@ func (c *Context) Logf(format string, args ...interface{}) {
 
 func (c *Context) Query(name string) string {
 	return c.request.URL.Query().Get(name)
+}
+
+func (c *Context) Read(data []byte) (int, error) {
+	if c.ws == nil {
+		return c.Body().Read(data)
+	}
+
+	_, r, err := c.ws.NextReader()
+	if err != nil {
+		return 0, err
+	}
+
+	return r.Read(data)
 }
 
 func (c *Context) Redirect(code int, target string) error {
@@ -212,6 +233,21 @@ func (c *Context) Var(name string) string {
 		return v
 	}
 	return mux.Vars(c.request)[name]
+}
+
+func (c *Context) Write(data []byte) (int, error) {
+	if c.ws == nil {
+		return c.response.Write(data)
+	}
+
+	w, err := c.ws.NextWriter(websocket.TextMessage)
+	if err != nil {
+		return 0, err
+	}
+
+	defer w.Close()
+
+	return w.Write(data)
 }
 
 type causer interface {
