@@ -8,6 +8,7 @@ import (
 	"io/ioutil"
 	"net/http"
 	"os"
+	"strings"
 
 	"github.com/convox/logger"
 	"github.com/gorilla/mux"
@@ -146,6 +147,22 @@ func (c *Context) RenderText(t string) error {
 
 func (c *Context) Request() *http.Request {
 	return c.request
+}
+
+func (c *Context) Required(names ...string) error {
+	missing := []string{}
+
+	for _, n := range names {
+		if c.Form(n) == "" {
+			missing = append(missing, n)
+		}
+	}
+
+	if len(missing) > 0 {
+		return fmt.Errorf("parameter required: %s", strings.Join(missing, ", "))
+	}
+
+	return nil
 }
 
 func (c *Context) SessionGet(name string) (string, error) {
