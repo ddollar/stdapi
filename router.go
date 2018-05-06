@@ -65,14 +65,14 @@ func (rt *Router) context(name string, w http.ResponseWriter, r *http.Request, c
 
 	c.context = context.WithValue(r.Context(), "request.id", id)
 	c.id = id
-	c.logger = rt.Server.Logger.Prepend("id=%s", id).Append("cn=%s", name)
+	c.logger = rt.Server.Logger.Prepend("id=%s", id).At(name)
 	c.ws = conn
 
 	return c, nil
 }
 
 func (rt *Router) handle(fn HandlerFunc, c *Context) error {
-	c.logger.At("start").Logf("method=%q path=%q", c.request.Method, c.request.URL.Path)
+	c.logger.Logf("method=%q path=%q", c.request.Method, c.request.URL.Path)
 	c.logger = c.logger.Start()
 
 	rw := &responseWriter{ResponseWriter: c.response, code: 200}
@@ -92,7 +92,7 @@ func (rt *Router) handle(fn HandlerFunc, c *Context) error {
 		c.Error(err)
 	}
 
-	c.logger.At("end").Logf("code=%d", rw.code)
+	c.logger.Logf("code=%d", rw.code)
 
 	return nil
 }
