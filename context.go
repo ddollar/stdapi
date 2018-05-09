@@ -228,6 +228,18 @@ func (c *Context) SetVar(name, value string) {
 	c.rvars[name] = value
 }
 
+func (c *Context) Value(name string) string {
+	if v := c.Form(name); v != "" {
+		return v
+	}
+
+	if v := c.Header(name); v != "" {
+		return v
+	}
+
+	return ""
+}
+
 func (c *Context) Var(name string) string {
 	if v, ok := c.rvars[name]; ok {
 		return v
