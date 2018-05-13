@@ -8,9 +8,12 @@ import (
 	"github.com/convox/logger"
 )
 
+type RecoverFunc func(error)
+
 type Server struct {
 	Hostname   string
 	Logger     *logger.Logger
+	Recover    RecoverFunc
 	Router     *Router
 	middleware []Middleware
 }

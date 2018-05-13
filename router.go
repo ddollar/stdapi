@@ -2,6 +2,7 @@ package stdapi
 
 import (
 	"context"
+	"fmt"
 	"net"
 	"net/http"
 
@@ -75,6 +76,24 @@ func (rt *Router) context(name string, w http.ResponseWriter, r *http.Request, c
 func (rt *Router) handle(fn HandlerFunc, c *Context) error {
 	defer c.Close()
 
+	defer func() {
+		if rt.Server.Recover == nil {
+			return
+		}
+		switch t := recover().(type) {
+		case error:
+			rt.Server.Recover(t)
+		case string:
+			rt.Server.Recover(fmt.Errorf(t))
+		case fmt.Stringer:
+			rt.Server.Recover(fmt.Errorf(t.String()))
+		case nil:
+			return
+		default:
+			panic(t)
+		}
+	}()
+
 	c.logger.Logf("method=%q path=%q", c.request.Method, c.request.URL.Path)
 	c.logger = c.logger.Start()
 
@@ -92,6 +111,7 @@ func (rt *Router) handle(fn HandlerFunc, c *Context) error {
 	fnmw := rt.wrap(fn, mw...)
 
 	err := fnmw(c)
+
 	switch t := err.(type) {
 	case *net.OpError:
 		c.logger.Logf("state=closed error=%q", t.Err)
