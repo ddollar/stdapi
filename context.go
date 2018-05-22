@@ -74,22 +74,6 @@ func (c *Context) Context() context.Context {
 	return c.context
 }
 
-func (c *Context) Error(err error) error {
-	switch t := err.(type) {
-	case Error:
-		c.logger.Append("code=%d", t.Code).Error(err)
-		http.Error(c.response, t.Error(), t.Code)
-	case causer:
-		c.logger.Error(err)
-		http.Error(c.response, "server error", http.StatusInternalServerError)
-	case error:
-		c.logger.Error(err)
-		http.Error(c.response, t.Error(), http.StatusForbidden)
-	}
-
-	return err
-}
-
 func (c *Context) Form(name string) string {
 	return c.request.FormValue(name)
 }
@@ -260,6 +244,22 @@ func (c *Context) Write(data []byte) (int, error) {
 	defer w.Close()
 
 	return w.Write(data)
+}
+
+func (c *Context) renderError(err error) error {
+	switch t := err.(type) {
+	case Error:
+		c.logger.Append("code=%d", t.Code).Error(err)
+		http.Error(c.response, t.Error(), t.Code)
+	case causer:
+		c.logger.Error(err)
+		http.Error(c.response, "server error", http.StatusInternalServerError)
+	case error:
+		c.logger.Error(err)
+		http.Error(c.response, t.Error(), http.StatusForbidden)
+	}
+
+	return err
 }
 
 type causer interface {

@@ -117,7 +117,7 @@ func (rt *Router) handle(fn HandlerFunc, c *Context) error {
 		c.logger.Logf("state=closed error=%q", t.Err)
 	default:
 		if err != nil {
-			c.Error(err)
+			c.renderError(err)
 		}
 		c.logger.Logf("code=%d", rw.code)
 	}
