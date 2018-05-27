@@ -74,8 +74,6 @@ func (rt *Router) context(name string, w http.ResponseWriter, r *http.Request, c
 }
 
 func (rt *Router) handle(fn HandlerFunc, c *Context) error {
-	defer c.Close()
-
 	defer func() {
 		if rt.Server.Recover == nil {
 			return
@@ -112,17 +110,12 @@ func (rt *Router) handle(fn HandlerFunc, c *Context) error {
 
 	err := fnmw(c)
 
-	switch t := err.(type) {
-	case *net.OpError:
-		c.logger.Logf("state=closed error=%q", t.Err)
-	default:
-		if err != nil {
-			c.renderError(err)
-		}
-		c.logger.Logf("code=%d", rw.code)
+	if ne, ok := err.(*net.OpError); ok {
+		c.logger.Logf("state=closed error=%q", ne.Err)
+		return nil
 	}
 
-	return nil
+	return err
 }
 
 func (rt *Router) http(fn HandlerFunc) http.HandlerFunc {
@@ -134,8 +127,17 @@ func (rt *Router) http(fn HandlerFunc) http.HandlerFunc {
 		}
 
 		if err := rt.handle(fn, c); err != nil {
-			http.Error(w, err.Error(), 500)
-			return
+			switch t := err.(type) {
+			case Error:
+				c.logger.Append("code=%d", t.Code).Error(err)
+				http.Error(c.response, t.Error(), t.Code)
+			case causer:
+				c.logger.Error(err)
+				http.Error(c.response, "server error", http.StatusInternalServerError)
+			case error:
+				c.logger.Error(err)
+				http.Error(c.response, t.Error(), http.StatusForbidden)
+			}
 		}
 	}
 }
@@ -146,18 +148,20 @@ func (rt *Router) websocket(fn HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		conn, err := upgrader.Upgrade(w, r, nil)
 		if err != nil {
-			http.Error(w, err.Error(), 500)
+			conn.WriteMessage(websocket.TextMessage, []byte(fmt.Sprintf("ERROR: %s\n", err.Error())))
 			return
 		}
 
+		defer conn.WriteMessage(websocket.CloseMessage, websocket.FormatCloseMessage(1000, ""))
+
 		c, err := rt.context(functionName(fn), w, r, conn)
 		if err != nil {
-			http.Error(w, err.Error(), 500)
+			conn.WriteMessage(websocket.TextMessage, []byte(fmt.Sprintf("ERROR: %s\n", err.Error())))
 			return
 		}
 
 		if err := rt.handle(fn, c); err != nil {
-			http.Error(w, err.Error(), 500)
+			conn.WriteMessage(websocket.TextMessage, []byte(fmt.Sprintf("ERROR: %s\n", err.Error())))
 			return
 		}
 	}
