@@ -26,8 +26,12 @@ func (rt *Router) Redirect(method, path string, code int, target string) {
 }
 
 func (rt *Router) Route(method, path string, fn HandlerFunc) {
-	rt.Handle(path, rt.websocket(fn)).Methods(method).Headers("Upgrade", "websocket")
-	rt.Handle(path, rt.http(fn)).Methods(method)
+	switch method {
+	case "SOCKET":
+		rt.Handle(path, rt.websocket(fn)).Methods("GET").Headers("Upgrade", "websocket")
+	default:
+		rt.Handle(path, rt.http(fn)).Methods(method)
+	}
 }
 
 func (rt *Router) Static(prefix, path string) {
