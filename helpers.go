@@ -9,6 +9,16 @@ import (
 	"strings"
 )
 
+func coalesce(ss ...string) string {
+	for _, s := range ss {
+		if s != "" {
+			return s
+		}
+	}
+
+	return ""
+}
+
 func functionName(fn interface{}) string {
 	sig := runtime.FuncForPC(reflect.ValueOf(fn).Pointer()).Name()
 	parts := strings.Split(sig, ".")
