@@ -133,8 +133,8 @@ func (rt *Router) http(fn HandlerFunc) http.HandlerFunc {
 		if err := rt.handle(fn, c); err != nil {
 			switch t := err.(type) {
 			case Error:
-				c.logger.Append("code=%d", t.Code).Error(err)
-				http.Error(c.response, t.Error(), t.Code)
+				c.logger.Append("code=%d", t.Code()).Error(err)
+				http.Error(c.response, t.Error(), t.Code())
 			case causer:
 				c.logger.Error(err)
 				http.Error(c.response, "server error", http.StatusInternalServerError)
