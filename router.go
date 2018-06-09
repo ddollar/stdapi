@@ -152,7 +152,7 @@ func (rt *Router) websocket(fn HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		conn, err := upgrader.Upgrade(w, r, nil)
 		if err != nil {
-			conn.WriteMessage(websocket.TextMessage, []byte(fmt.Sprintf("ERROR: %s\n", err.Error())))
+			w.Write([]byte(fmt.Sprintf("ERROR: %s\n", err.Error())))
 			return
 		}
 

@@ -28,8 +28,10 @@ func (s *Server) Listen(proto, addr string) error {
 
 	switch proto {
 	case "h2", "https", "tls":
-		config := &tls.Config{
-			NextProtos: []string{"h2"},
+		config := &tls.Config{}
+
+		if proto == "h2" {
+			config.NextProtos = []string{"h2"}
 		}
 
 		cert, err := generateSelfSignedCertificate(s.Hostname)
