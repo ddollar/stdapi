@@ -53,21 +53,30 @@ func UnmarshalOptions(r *http.Request, opts interface{}) error {
 
 func fetchForm(r *http.Request, name string, def string) (string, bool) {
 	if v, ok := r.Form[name]; ok {
-		return coalesce(v[0], def), true
+		return v[0], true
+	}
+	if def != "" {
+		return def, true
 	}
 	return "", false
 }
 
 func fetchHeader(r *http.Request, name string, def string) (string, bool) {
 	if v, ok := r.Header[name]; ok {
-		return coalesce(v[0], def), true
+		return v[0], true
+	}
+	if def != "" {
+		return def, true
 	}
 	return "", false
 }
 
 func fetchQuery(r *http.Request, name string, def string) (string, bool) {
 	if v, ok := r.URL.Query()[name]; ok {
-		return coalesce(v[0], def), true
+		return v[0], true
+	}
+	if def != "" {
+		return def, true
 	}
 	return "", false
 }
