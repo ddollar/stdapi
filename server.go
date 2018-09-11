@@ -60,12 +60,16 @@ func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	s.Router.ServeHTTP(w, r)
 }
 
-func (s *Server) Subrouter(prefix string, fn func(Router)) {
-	fn(Router{
+func (s *Server) Subrouter(prefix string, fn func(Router)) Router {
+	r := Router{
 		Parent: s.Router,
 		Router: s.Router.PathPrefix(prefix).Subrouter(),
 		Server: s,
-	})
+	}
+
+	fn(r)
+
+	return r
 }
 
 func (s *Server) Use(mw Middleware) {
