@@ -148,7 +148,7 @@ func (c *Context) RenderOK() error {
 }
 
 func (c *Context) RenderTemplate(path string, params interface{}) error {
-	return RenderTemplate(c.response, path, params)
+	return RenderTemplate(c.response, c.request, path, params)
 }
 
 func (c *Context) RenderText(t string) error {

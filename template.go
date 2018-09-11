@@ -13,10 +13,15 @@ import (
 )
 
 var (
-	Templates = map[string]*template.Template{}
+	helpers   TemplateHelpers
+	templates = map[string]*template.Template{}
 )
 
-func LoadTemplates(dir string, helpers map[string]interface{}) error {
+type TemplateHelpers func(r *http.Request) template.FuncMap
+
+func LoadTemplates(dir string, fn TemplateHelpers) error {
+	helpers = fn
+
 	return filepath.Walk(dir, func(path string, info os.FileInfo, err error) error {
 		if err != nil {
 			return err
@@ -29,7 +34,7 @@ func LoadTemplates(dir string, helpers map[string]interface{}) error {
 			files = appendIfExists(files, filepath.Join(filepath.Dir(path), "layout.tmpl"))
 			files = append(files, path)
 
-			t, err := template.New("main").Funcs(helpers).ParseFiles(files...)
+			t, err := template.New("main").ParseFiles(files...)
 			if err != nil {
 				return err
 			}
@@ -39,18 +44,21 @@ func LoadTemplates(dir string, helpers map[string]interface{}) error {
 				return err
 			}
 
-			Templates[rel] = t
+			templates[rel] = t
 		}
 
 		return nil
 	})
 }
 
-func RenderTemplate(w http.ResponseWriter, path string, params interface{}) error {
-	t, ok := Templates[fmt.Sprintf("%s.tmpl", path)]
-
+func RenderTemplate(w http.ResponseWriter, r *http.Request, path string, params interface{}) error {
+	t, ok := templates[fmt.Sprintf("%s.tmpl", path)]
 	if !ok {
 		return fmt.Errorf("no such template: %s", path)
+	}
+
+	if helpers != nil {
+		t = t.Funcs(helpers(r))
 	}
 
 	var buf bytes.Buffer
