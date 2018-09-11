@@ -33,6 +33,8 @@ func (rt *Router) Route(method, path string, fn HandlerFunc) Route {
 	switch method {
 	case "SOCKET":
 		return Route{rt.Handle(path, rt.websocket(fn)).Methods("GET").Headers("Upgrade", "websocket")}
+	case "ANY":
+		return Route{rt.Handle(path, rt.http(fn))}
 	default:
 		return Route{rt.Handle(path, rt.http(fn)).Methods(method)}
 	}
