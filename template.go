@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"html/template"
 	"io"
-	"net/http"
 	"os"
 	"path/filepath"
 
@@ -17,7 +16,7 @@ var (
 	templates = map[string]*template.Template{}
 )
 
-type TemplateHelpers func(r *http.Request) template.FuncMap
+type TemplateHelpers func(c *Context) template.FuncMap
 
 func LoadTemplates(dir string, fn TemplateHelpers) error {
 	helpers = fn
@@ -51,14 +50,14 @@ func LoadTemplates(dir string, fn TemplateHelpers) error {
 	})
 }
 
-func RenderTemplate(w http.ResponseWriter, r *http.Request, path string, params interface{}) error {
+func RenderTemplate(c *Context, path string, params interface{}) error {
 	t, ok := templates[fmt.Sprintf("%s.tmpl", path)]
 	if !ok {
 		return fmt.Errorf("no such template: %s", path)
 	}
 
 	if helpers != nil {
-		t = t.Funcs(helpers(r))
+		t = t.Funcs(helpers(c))
 	}
 
 	var buf bytes.Buffer
@@ -67,7 +66,7 @@ func RenderTemplate(w http.ResponseWriter, r *http.Request, path string, params 
 		return errors.WithStack(err)
 	}
 
-	if _, err := io.Copy(w, &buf); err != nil {
+	if _, err := io.Copy(c, &buf); err != nil {
 		return err
 	}
 
