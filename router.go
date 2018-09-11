@@ -29,25 +29,25 @@ func (rt *Router) Redirect(method, path string, code int, target string) {
 	rt.Handle(path, Redirect(code, target)).Methods(method)
 }
 
-func (rt *Router) Route(method, path string, fn HandlerFunc) *Route {
+func (rt *Router) Route(method, path string, fn HandlerFunc) Route {
 	switch method {
 	case "SOCKET":
-		return &Route{rt.Handle(path, rt.websocket(fn)).Methods("GET").Headers("Upgrade", "websocket")}
+		return Route{rt.Handle(path, rt.websocket(fn)).Methods("GET").Headers("Upgrade", "websocket")}
 	default:
-		return &Route{rt.Handle(path, rt.http(fn)).Methods(method)}
+		return Route{rt.Handle(path, rt.http(fn)).Methods(method)}
 	}
 }
 
-func (rt *Router) Static(prefix, path string) *Route {
-	return &Route{rt.PathPrefix(prefix).Handler(http.StripPrefix(prefix, http.FileServer(http.Dir(path))))}
+func (rt *Router) Static(prefix, path string) Route {
+	return Route{rt.PathPrefix(prefix).Handler(http.StripPrefix(prefix, http.FileServer(http.Dir(path))))}
 }
 
-func (r *Router) Subrouter(prefix string) Router {
-	return Router{
+func (r *Router) Subrouter(prefix string, fn func(Router)) {
+	fn(Router{
 		Parent: r,
 		Router: r.PathPrefix(prefix).Subrouter(),
 		Server: r.Server,
-	}
+	})
 }
 
 func (rt *Router) Use(mw Middleware) {
