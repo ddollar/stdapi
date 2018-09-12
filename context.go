@@ -218,6 +218,10 @@ func (c *Context) Required(names ...string) error {
 	return nil
 }
 
+func (c *Context) Response() http.ResponseWriter {
+	return c.response
+}
+
 func (c *Context) SessionGet(name string) (string, error) {
 	s, err := c.session.Get(c.request, SessionName)
 	if err != nil {
@@ -277,6 +281,10 @@ func (c *Context) Var(name string) string {
 		return v
 	}
 	return mux.Vars(c.request)[name]
+}
+
+func (c *Context) Websocket() *websocket.Conn {
+	return c.ws
 }
 
 func (c *Context) Write(data []byte) (int, error) {
