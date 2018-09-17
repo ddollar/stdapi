@@ -306,7 +306,3 @@ func (c *Context) Write(data []byte) (int, error) {
 
 	return w.Write(data)
 }
-
-type causer interface {
-	Cause() error
-}

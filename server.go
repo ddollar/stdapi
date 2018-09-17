@@ -48,7 +48,7 @@ func (s *Server) Listen(proto, addr string) error {
 	return http.Serve(l, s)
 }
 
-func (s *Server) MatcherFunc(fn mux.MatcherFunc) *Router {
+func (s *Server) MatcherFunc(fn mux.MatcherFunc) Route {
 	return s.Router.MatcherFunc(fn)
 }
 
