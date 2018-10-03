@@ -4,7 +4,11 @@ import "net/http"
 
 type Response struct {
 	http.ResponseWriter
-	Code int
+	code int
+}
+
+func (r Response) Code() int {
+	return r.code
 }
 
 func (r Response) Flush() {
@@ -14,6 +18,6 @@ func (r Response) Flush() {
 }
 
 func (r Response) WriteHeader(code int) {
-	r.Code = code
+	r.code = code
 	r.ResponseWriter.WriteHeader(code)
 }
