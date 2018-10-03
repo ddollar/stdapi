@@ -130,8 +130,8 @@ func (rt *Router) handle(fn HandlerFunc, c *Context) error {
 	c.logger.Logf("method=%q path=%q", c.request.Method, c.request.URL.Path)
 	c.logger = c.logger.Start()
 
-	rw := &responseWriter{ResponseWriter: c.response, code: 200}
-	c.response = rw
+	// rw := &responseWriter{ResponseWriter: c.response, code: 200}
+	// c.response = rw
 
 	mw := []Middleware{}
 
@@ -217,25 +217,25 @@ func (rt *Router) wrap(fn HandlerFunc, m ...Middleware) HandlerFunc {
 	return m[0](rt.wrap(fn, m[1:len(m)]...))
 }
 
-type responseWriter struct {
-	http.ResponseWriter
-	bytes int64
-	code  int
-}
+// type responseWriter struct {
+//   http.ResponseWriter
+//   bytes int64
+//   code  int
+// }
 
-func (w *responseWriter) Flush() {
-	if f, ok := w.ResponseWriter.(http.Flusher); ok {
-		f.Flush()
-	}
-}
+// func (w *responseWriter) Flush() {
+//   if f, ok := w.ResponseWriter.(http.Flusher); ok {
+//     f.Flush()
+//   }
+// }
 
-func (w *responseWriter) Write(data []byte) (int, error) {
-	n, err := w.ResponseWriter.Write(data)
-	w.bytes += int64(n)
-	return n, err
-}
+// func (w *responseWriter) Write(data []byte) (int, error) {
+//   n, err := w.ResponseWriter.Write(data)
+//   w.bytes += int64(n)
+//   return n, err
+// }
 
-func (w *responseWriter) WriteHeader(code int) {
-	w.code = code
-	w.ResponseWriter.WriteHeader(code)
-}
+// func (w *responseWriter) WriteHeader(code int) {
+//   w.code = code
+//   w.ResponseWriter.WriteHeader(code)
+// }
