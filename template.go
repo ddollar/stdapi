@@ -9,6 +9,7 @@ import (
 	"path/filepath"
 
 	"github.com/gobuffalo/packr"
+	"github.com/pkg/errors"
 )
 
 var (
@@ -39,7 +40,7 @@ func RenderTemplate(c *Context, path string, params interface{}) error {
 	for _, f := range files {
 		if templateBox.Has(f) {
 			if _, err := ts.Parse(templateBox.String(f)); err != nil {
-				return err
+				return errors.WithStack(err)
 			}
 		}
 	}
@@ -47,11 +48,11 @@ func RenderTemplate(c *Context, path string, params interface{}) error {
 	var buf bytes.Buffer
 
 	if err := ts.Execute(&buf, params); err != nil {
-		return err
+		return errors.WithStack(err)
 	}
 
 	if _, err := io.Copy(c, &buf); err != nil {
-		return err
+		return errors.WithStack(err)
 	}
 
 	return nil
