@@ -9,6 +9,7 @@ import (
 	"github.com/gobuffalo/packr"
 	"github.com/gorilla/mux"
 	"github.com/gorilla/websocket"
+	"github.com/pkg/errors"
 )
 
 type HandlerFunc func(c *Context) error
@@ -92,7 +93,7 @@ func (rt *Router) UseHandlerFunc(fn http.HandlerFunc) {
 func (rt *Router) context(name string, w http.ResponseWriter, r *http.Request, conn *websocket.Conn) (*Context, error) {
 	id, err := generateId(12)
 	if err != nil {
-		return nil, err
+		return nil, errors.WithStack(err)
 	}
 
 	w.Header().Add("Request-Id", id)
@@ -158,7 +159,7 @@ func (rt *Router) handle(fn HandlerFunc, c *Context) error {
 		return nil
 	}
 
-	return err
+	return errors.WithStack(err)
 }
 
 func (rt *Router) http(fn HandlerFunc) http.HandlerFunc {
