@@ -28,7 +28,7 @@ type Context struct {
 	logger   *logger.Logger
 	name     string
 	request  *http.Request
-	response Response
+	response *Response
 	rvars    map[string]string
 	session  sessions.Store
 	vars     map[string]interface{}
@@ -49,7 +49,7 @@ func NewContext(w http.ResponseWriter, r *http.Request) *Context {
 		context:  r.Context(),
 		logger:   logger.New(""),
 		request:  r,
-		response: Response{ResponseWriter: w},
+		response: &Response{ResponseWriter: w},
 		rvars:    map[string]string{},
 		session:  sessions.NewCookieStore([]byte(SessionSecret)),
 		vars:     map[string]interface{}{},
@@ -223,7 +223,7 @@ func (c *Context) Required(names ...string) error {
 	return nil
 }
 
-func (c *Context) Response() Response {
+func (c *Context) Response() *Response {
 	return c.response
 }
 
