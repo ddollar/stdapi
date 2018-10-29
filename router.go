@@ -159,6 +159,8 @@ func (rt *Router) handle(fn HandlerFunc, c *Context) error {
 		return nil
 	}
 
+	c.logger.Logf("response=%d", c.response.Code())
+
 	return errr
 }
 
