@@ -128,8 +128,7 @@ func (rt *Router) handle(fn HandlerFunc, c *Context) error {
 		}
 	}()
 
-	c.logger.Logf("method=%q path=%q", c.request.Method, c.request.URL.Path)
-	c.logger = c.logger.Start()
+	c.logger = c.logger.Append("method=%q path=%q", c.request.Method, c.request.URL.Path).Start()
 
 	// rw := &responseWriter{ResponseWriter: c.response, code: 200}
 	// c.response = rw
@@ -159,7 +158,13 @@ func (rt *Router) handle(fn HandlerFunc, c *Context) error {
 		return nil
 	}
 
-	c.logger.Logf("response=%d", c.response.Code())
+	code := c.response.Code()
+
+	if code == 0 {
+		code = 200
+	}
+
+	c.logger.Logf("response=%d", code)
 
 	return errr
 }
