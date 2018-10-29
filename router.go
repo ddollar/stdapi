@@ -152,14 +152,14 @@ func (rt *Router) handle(fn HandlerFunc, c *Context) error {
 
 	fnmw := rt.wrap(fn, mw...)
 
-	err := fnmw(c)
+	errr := fnmw(c) // non-standard error name to avoid wrapping
 
-	if ne, ok := err.(*net.OpError); ok {
+	if ne, ok := errr.(*net.OpError); ok {
 		c.logger.Logf("state=closed error=%q", ne.Err)
 		return nil
 	}
 
-	return errors.WithStack(err)
+	return errr
 }
 
 func (rt *Router) http(fn HandlerFunc) http.HandlerFunc {
