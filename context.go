@@ -57,6 +57,10 @@ func NewContext(w http.ResponseWriter, r *http.Request) *Context {
 	}
 }
 
+func (c *Context) Ajax() bool {
+	return c.request.Header.Get("X-Request-With") == "XMLHttpRequest"
+}
+
 func (c *Context) Body() io.ReadCloser {
 	return c.request.Body
 }
