@@ -16,6 +16,7 @@ import (
 	"github.com/gorilla/sessions"
 	"github.com/gorilla/websocket"
 	"github.com/pkg/errors"
+	"github.com/sebest/xff"
 )
 
 var (
@@ -133,6 +134,10 @@ func (c *Context) Get(name string) interface{} {
 
 func (c *Context) Header(name string) string {
 	return c.request.Header.Get(name)
+}
+
+func (c *Context) IP() string {
+	return strings.Split(xff.GetRemoteAddr(c.Request()), ":")[0]
 }
 
 func (c *Context) Logf(format string, args ...interface{}) {
