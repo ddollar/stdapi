@@ -20,6 +20,10 @@ type Server struct {
 	middleware []Middleware
 }
 
+func (s *Server) HandleNotFound(fn HandlerFunc) {
+	s.Router.HandleNotFound(fn)
+}
+
 func (s *Server) Listen(proto, addr string) error {
 	s.Logger.At("listen").Logf("hostname=%q proto=%q addr=%q", s.Hostname, proto, addr)
 
