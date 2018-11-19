@@ -8,7 +8,6 @@ import (
 	"io"
 	"io/ioutil"
 	"net/http"
-	"os"
 	"strings"
 
 	"github.com/convox/logger"
@@ -20,8 +19,8 @@ import (
 )
 
 var (
-	SessionName   = "console"
-	SessionSecret = os.Getenv("SESSION_SECRET")
+	SessionName   = ""
+	SessionSecret = ""
 )
 
 type Context struct {
@@ -241,10 +240,15 @@ func (c *Context) Response() *Response {
 }
 
 func (c *Context) SessionGet(name string) (string, error) {
-	s, err := c.session.Get(c.request, SessionName)
-	if err != nil {
-		return "", errors.WithStack(err)
+	if SessionName == "" {
+		return "", fmt.Errorf("no session name set")
 	}
+
+	if SessionSecret == "" {
+		return "", fmt.Errorf("no session secret set")
+	}
+
+	s, _ := c.session.Get(c.request, SessionName)
 
 	vi, ok := s.Values[name]
 	if !ok {
@@ -260,10 +264,15 @@ func (c *Context) SessionGet(name string) (string, error) {
 }
 
 func (c *Context) SessionSet(name, value string) error {
-	s, err := c.session.Get(c.request, SessionName)
-	if err != nil {
-		return errors.WithStack(err)
+	if SessionName == "" {
+		return fmt.Errorf("no session name set")
 	}
+
+	if SessionSecret == "" {
+		return fmt.Errorf("no session secret set")
+	}
+
+	s, _ := c.session.Get(c.request, SessionName)
 
 	s.Values[name] = value
 
