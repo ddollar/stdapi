@@ -52,7 +52,9 @@ func RenderTemplate(c *Context, path string, params interface{}) error {
 	}
 
 	if _, err := io.Copy(c, &buf); err != nil {
-		return errors.WithStack(err)
+		if err != io.EOF {
+			return errors.WithStack(err)
+		}
 	}
 
 	return nil
