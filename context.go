@@ -155,7 +155,7 @@ func (c *Context) Protocol() string {
 		return h
 	}
 
-	return c.request.Url.Scheme
+	return c.request.URL.Scheme
 }
 
 func (c *Context) Query(name string) string {
