@@ -142,6 +142,10 @@ func (c *Context) IP() string {
 	return strings.Split(xff.GetRemoteAddr(c.Request()), ":")[0]
 }
 
+func (c *Context) Logger() *logger.Logger {
+	return c.logger
+}
+
 func (c *Context) Logf(format string, args ...interface{}) {
 	c.logger.Logf(format, args...)
 }
