@@ -150,6 +150,14 @@ func (c *Context) Name() string {
 	return c.name
 }
 
+func (c *Context) Protocol() string {
+	if h := c.Header("X-Forwarded-Proto"); h != "" {
+		return h
+	}
+
+	return c.request.Url.Scheme
+}
+
 func (c *Context) Query(name string) string {
 	return c.request.URL.Query().Get(name)
 }
