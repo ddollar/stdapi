@@ -155,7 +155,7 @@ func (c *Context) Protocol() string {
 		return h
 	}
 
-	return c.request.URL.Scheme
+	return "https"
 }
 
 func (c *Context) Query(name string) string {
