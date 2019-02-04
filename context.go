@@ -19,8 +19,9 @@ import (
 )
 
 var (
-	SessionName   = ""
-	SessionSecret = ""
+	SessionExpiration = 86400 * 30
+	SessionName       = ""
+	SessionSecret     = ""
 )
 
 type Context struct {
@@ -47,6 +48,7 @@ func init() {
 
 func NewContext(w http.ResponseWriter, r *http.Request) *Context {
 	s := sessions.NewCookieStore([]byte(SessionSecret))
+	s.Options.MaxAge = SessionExpiration
 	s.Options.SameSite = http.SameSiteLaxMode
 
 	return &Context{
