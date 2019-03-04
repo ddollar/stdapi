@@ -13,10 +13,12 @@ import (
 type RecoverFunc func(error)
 
 type Server struct {
-	Hostname   string
-	Logger     *logger.Logger
-	Recover    RecoverFunc
-	Router     *Router
+	Check    HandlerFunc
+	Hostname string
+	Logger   *logger.Logger
+	Recover  RecoverFunc
+	Router   *Router
+
 	middleware []Middleware
 }
 
