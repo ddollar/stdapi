@@ -25,7 +25,7 @@ func LoadTemplates(box packr.Box, helpers TemplateHelpers) {
 }
 
 func TemplateExists(path string) bool {
-	return templateBox.Has(fmt.Sprintf("%s.tmpl"))
+	return templateBox.Has(fmt.Sprintf("%s.tmpl", path))
 }
 
 func RenderTemplate(c *Context, path string, params interface{}) error {
