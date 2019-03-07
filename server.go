@@ -1,6 +1,7 @@
 package stdapi
 
 import (
+	"context"
 	"crypto/tls"
 	"net"
 	"net/http"
@@ -20,6 +21,7 @@ type Server struct {
 	Router   *Router
 
 	middleware []Middleware
+	server     http.Server
 }
 
 func (s *Server) HandleNotFound(fn HandlerFunc) {
@@ -52,7 +54,13 @@ func (s *Server) Listen(proto, addr string) error {
 		l = tls.NewListener(l, config)
 	}
 
-	return http.Serve(l, s)
+	s.server = http.Server{Handler: s}
+
+	return s.server.Serve(l)
+}
+
+func (s *Server) Shutdown(ctx context.Context) error {
+	return s.server.Shutdown(ctx)
 }
 
 func (s *Server) MatcherFunc(fn mux.MatcherFunc) *Router {
