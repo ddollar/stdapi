@@ -1,8 +1,9 @@
-workflow "ci/static" {
+workflow "ci" {
   on = "push"
-  resolves = "static"
+  resolves = "ci/*"
 }
 
-action "static" {
+action "ci/static" {
   uses = "docker://ddollar/static"
+  runs = "static"
 }
