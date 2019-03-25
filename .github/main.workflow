@@ -1,6 +1,6 @@
 workflow "ci" {
   on = "push"
-  resolves = "ci/*"
+  resolves = [ "ci/static" ]
 }
 
 action "ci/static" {
