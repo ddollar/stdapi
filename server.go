@@ -20,6 +20,7 @@ type Server struct {
 	Recover  RecoverFunc
 	Router   *Router
 
+	text       string
 	middleware []Middleware
 	server     http.Server
 }
