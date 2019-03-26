@@ -1,11 +1,11 @@
 workflow "ci" {
   on = "push"
-  resolves = [ "ci/static", "ci/test" ]
+  resolves = [ "ci/lint", "ci/test" ]
 }
 
-action "ci/static" {
+action "ci/lint" {
   uses = "docker://ddollar/static"
-  runs = "static"
+  runs = "lint"
   secrets = [ "GITHUB_TOKEN" ]
 }
 
