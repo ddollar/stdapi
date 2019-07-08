@@ -7,6 +7,7 @@ import (
 	"io"
 	"os"
 	"path/filepath"
+	"strings"
 
 	"github.com/gobuffalo/packr"
 	"github.com/pkg/errors"
@@ -29,13 +30,23 @@ func TemplateExists(path string) bool {
 }
 
 func RenderTemplate(c *Context, path string, params interface{}) error {
+	return RenderTemplatePart(c, path, "main", params)
+}
+
+func RenderTemplatePart(c *Context, path, part string, params interface{}) error {
 	files := []string{}
 
 	files = append(files, "layout.tmpl")
-	files = append(files, filepath.Join(filepath.Dir(path), "layout.tmpl"))
+
+	parts := strings.Split(filepath.Dir(path), "/")
+
+	for i := range parts {
+		files = append(files, filepath.Join(filepath.Join(parts[0:i+1]...), "layout.tmpl"))
+	}
+
 	files = append(files, fmt.Sprintf("%s.tmpl", path))
 
-	ts := template.New("main")
+	ts := template.New(part)
 
 	if templateHelpers != nil {
 		ts = ts.Funcs(templateHelpers(c))
