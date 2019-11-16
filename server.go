@@ -60,7 +60,7 @@ func (s *Server) Listen(proto, addr string) error {
 	var h http.Handler
 
 	if s.Wrapper != nil {
-		h = s.Wrapper(h)
+		h = s.Wrapper(s)
 	} else {
 		h = s
 	}
