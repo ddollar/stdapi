@@ -21,6 +21,7 @@ type Server struct {
 	Router   *Router
 	Wrapper  func(h http.Handler) http.Handler
 
+	text       string
 	middleware []Middleware
 	server     http.Server
 }
