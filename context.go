@@ -10,7 +10,7 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/convox/logger"
+	"github.com/ddollar/logger"
 	"github.com/gorilla/mux"
 	"github.com/gorilla/sessions"
 	"github.com/gorilla/websocket"

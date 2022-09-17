@@ -28,7 +28,7 @@ func generateSelfSignedCertificate(host string) (tls.Certificate, error) {
 		SerialNumber: serial,
 		Subject: pkix.Name{
 			CommonName:   host,
-			Organization: []string{"convox"},
+			Organization: []string{"secure"},
 		},
 		NotBefore:             time.Now(),
 		NotAfter:              time.Now().Add(365 * 24 * time.Hour),

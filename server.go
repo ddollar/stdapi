@@ -6,7 +6,7 @@ import (
 	"net"
 	"net/http"
 
-	"github.com/convox/logger"
+	"github.com/ddollar/logger"
 	"github.com/gorilla/mux"
 	"github.com/pkg/errors"
 )
