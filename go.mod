@@ -1,6 +1,6 @@
 module github.com/ddollar/stdapi
 
-toolchain go1.23.0
+go 1.23.0
 
 require (
 	github.com/ddollar/logger v0.0.0-20180522214415-e39179955b52
