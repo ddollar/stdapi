@@ -20,5 +20,7 @@ github.com/stretchr/testify v1.9.0 h1:HtqpIVDClZ4nwg75+f6Lvsy/wHu+3BoSGCbBAcpTsT
 github.com/stretchr/testify v1.9.0/go.mod h1:r2ic/lqez/lEtzL7wO/rwa5dbSLXVDPFyf8C91i36aY=
 go.ddollar.dev/logger v0.0.0-20180522214415-e39179955b52 h1:WSb2x/MLcNejUFRaDceiVkVHuuTtvk9QfpYqLIN7s+A=
 go.ddollar.dev/logger v0.0.0-20180522214415-e39179955b52/go.mod h1:HBViJ1psICJ950MWZToA6A6Th8LHfR+zl3Gj8LW3uyk=
+go.ddollar.dev/logger v1.3.0 h1:DtxOzor40L/z/VkhpGwLJqGMygy2ZSFRlDFeoNH0EGw=
+go.ddollar.dev/logger v1.3.0/go.mod h1:Ks1wDPY67nlFnFqUimLJHZeXDtEfxQCe1CfK2tz4XlE=
 gopkg.in/yaml.v3 v3.0.1 h1:fxVm/GzAzEWqLHuvctI91KS9hhNmmWOoWu0XTYJS7CA=
 gopkg.in/yaml.v3 v3.0.1/go.mod h1:K4uyk7z7BCEPqu6E+C64Yfv1cQ7kz7rIZviUmN+EgEM=
