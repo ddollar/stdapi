@@ -32,7 +32,7 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/ddollar/logger"
+	"go.ddollar.dev/logger"
 	"github.com/gorilla/mux"
 )
 
